@@ -49,7 +49,7 @@ Client runs on http://localhost:3000
 
 Watch the server terminal for console.log outputs showing player connections, room creation, restaurant submissions, individual choices, and final match calculations.
 
-## Project Structure
+## Structure
 ```
 ├── server/                   # Socket.IO server
 │   ├── server/
