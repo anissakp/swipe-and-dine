@@ -1,4 +1,4 @@
-# Swipe & Dine - Real-Time Restaurant Matching
+# Swipe & Dine
 
 This project was completed as part of Carnegie Mellon University's 05-635: Programming Interactive Experiences course. The goal was to build a two-player web app that helps people decide where to eat together by matching their restaurant preferences in real time. 
 
