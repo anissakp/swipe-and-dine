@@ -78,7 +78,8 @@ export function useSocket() {
     });
 
     socket.on("gameStart", (restaurants: Restaurant[]) => {
-      console.log(`Game starting with ${restaurants.length} restaurants`);
+      console.log(`Game starting with ${restaurants.length} restaurants:`);
+      restaurants.forEach((r, i) => console.log(`  ${i + 1}. ${r.name}`));
       setGameState((prev) => ({
         ...prev,
         restaurants,
@@ -99,24 +100,15 @@ export function useSocket() {
     });
 
     socket.on("waitingForOther", () => {
-      console.log("Waiting for other player...");
+      console.log("Waiting for other player to finish...");
       setGameState((prev) => ({
         ...prev,
         isWaiting: true,
       }));
     });
 
-    socket.on("cardResult", (result: MatchResult) => {
-      console.log(`Result for ${result.restaurantName}: ${result.isMatch ? "MATCH!" : "No match"}`);
-      setGameState((prev) => ({
-        ...prev,
-        lastResult: result,
-        isWaiting: false,
-      }));
-    });
-
     socket.on("gameEnd", (matches: Restaurant[], neutrals: Restaurant[]) => {
-      console.log(`Game ended. Matches: ${matches.length}`);
+      console.log(`Game ended. Matches: ${matches.length}, Neutrals: ${neutrals.length}`);
       setGameState((prev) => ({
         ...prev,
         matches,
@@ -141,24 +133,28 @@ export function useSocket() {
 
   const createRoom = useCallback(() => {
     if (socketRef.current) {
+      console.log("Creating new room...");
       socketRef.current.emit("createRoom");
     }
   }, []);
 
   const joinRoom = useCallback((roomCode: string) => {
     if (socketRef.current) {
+      console.log(`Attempting to join room: ${roomCode}`);
       socketRef.current.emit("joinRoom", roomCode);
     }
   }, []);
 
   const submitRestaurants = useCallback((restaurants: string[]) => {
     if (socketRef.current) {
+      console.log("Submitting restaurants:", restaurants);
       socketRef.current.emit("submitRestaurants", restaurants);
     }
   }, []);
 
   const makeChoice = useCallback((restaurantId: string, choice: Choice) => {
     if (socketRef.current) {
+      console.log(`Making choice: ${choice} for restaurant ${restaurantId}`);
       socketRef.current.emit("makeChoice", restaurantId, choice);
     }
   }, []);

@@ -116,52 +116,40 @@ function App() {
               Card {gameState.cardIndex + 1} of {gameState.totalCards}
             </p>
 
-            {gameState.currentCard && (
+            {gameState.currentCard && !gameState.isWaiting && (
               <div className="bg-white shadow-lg rounded-lg p-8 border-2 border-gray-200">
                 <h3 className="text-3xl font-bold mb-4">
                   {gameState.currentCard.name}
                 </h3>
 
-                {gameState.lastResult && (
-                  <div
-                    className={`mb-4 p-2 rounded ${
-                      gameState.lastResult.isMatch
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
+                <div className="flex justify-center space-x-4">
+                  <button
+                    onClick={() => makeChoice(gameState.currentCard!.id, "YES")}
+                    className="bg-green-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-green-600"
                   >
-                    {gameState.lastResult.isMatch
-                      ? "🎉 MATCH!"
-                      : "No match - next card coming..."}
-                  </div>
-                )}
+                    YES
+                  </button>
+                  <button
+                    onClick={() => makeChoice(gameState.currentCard!.id, "NEUTRAL")}
+                    className="bg-yellow-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-yellow-600"
+                  >
+                    NEUTRAL
+                  </button>
+                  <button
+                    onClick={() => makeChoice(gameState.currentCard!.id, "NO")}
+                    className="bg-red-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-red-600"
+                  >
+                    NO
+                  </button>
+                </div>
+              </div>
+            )}
 
-                {gameState.isWaiting ? (
-                  <p className="text-yellow-600 animate-pulse">
-                    Waiting for other player...
-                  </p>
-                ) : (
-                  <div className="flex justify-center space-x-4">
-                    <button
-                      onClick={() => makeChoice(gameState.currentCard!.id, "YES")}
-                      className="bg-green-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-green-600"
-                    >
-                      YES
-                    </button>
-                    <button
-                      onClick={() => makeChoice(gameState.currentCard!.id, "NEUTRAL")}
-                      className="bg-yellow-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-yellow-600"
-                    >
-                      NEUTRAL
-                    </button>
-                    <button
-                      onClick={() => makeChoice(gameState.currentCard!.id, "NO")}
-                      className="bg-red-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-red-600"
-                    >
-                      NO
-                    </button>
-                  </div>
-                )}
+            {gameState.isWaiting && (
+              <div className="bg-blue-50 p-8 rounded-lg">
+                <p className="text-blue-600 text-xl">
+                  You're done! Waiting for other player to finish...
+                </p>
               </div>
             )}
           </div>
