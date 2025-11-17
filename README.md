@@ -44,8 +44,8 @@ Client runs on http://localhost:3000
 3. Open http://localhost:3000 in another tab
 4. Enter the room code and click "Join"
 5. Both players enter 3 different restaurant names each and submit
-6. Each player makes YES/NO/NEUTRAL choices independently at their own pace
-7. After both players finish, results display all matches (both YES) and neutrals
+6. Each player makes "yes" / "no" / "neutral" choices independently at their own pace
+7. After both players finish, results display all matches (both "yes") and neutrals
 
 Watch the server terminal for console.log outputs showing player connections, room creation, restaurant submissions, individual choices, and final match calculations.
 
