@@ -1,46 +1,70 @@
-# Getting Started with Create React App
+# Swipe & Dine - Real-Time Restaurant Matching
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was completed as part of Carnegie Mellon University's 05-635: Programming Interactive Experiences course. The goal was to build a two-player web app that helps people decide where to eat together by matching their restaurant preferences in real time. 
 
-## Available Scripts
+## Installation and Usage
 
-In the project directory, you can run:
+Follow these steps to set up the project locally:
 
-### `npm start`
+1. **Clone the Repository**
+```bash
+git clone https://github.com/anissakp/PIX-Final-Project.git
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+3. **Install Server Dependencies**
+```bash
+cd server
+npm install
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+3. **Install React Client Dependencies**
+```bash
+cd react
+npm install
+```
 
-### `npm test`
+4. **Start the Socket.IO Server** (Terminal 1)
+```bash
+cd server
+npm run dev
+```
+Server runs on http://localhost:3001
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+5. **Start the React Client** (Terminal 2)
+```bash
+cd react
+npm start
+```
+Client runs on http://localhost:3000
 
-### `npm run build`
+## Testing the Synchronization
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Open http://localhost:3000 in one browser tab
+2. Click "Create Room" and note the room code (e.g., "X0QEMW")
+3. Open http://localhost:3000 in another tab
+4. Enter the room code and click "Join"
+5. Both players enter 3 different restaurant names each and submit
+6. Each player makes YES/NO/NEUTRAL choices independently at their own pace
+7. After both players finish, results display all matches (both YES) and neutrals
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Watch the server terminal for console.log outputs showing player connections, room creation, restaurant submissions, individual choices, and final match calculations.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project Structure
+```
+├── server/                   # Socket.IO server
+│   ├── server/
+│   │   └── index.ts          # Main server logic with game state management
+│   ├── shared/
+│   │   └── types.ts          # Shared TypeScript interfaces
+│   ├── package.json
+│   └── tsconfig.json
+├── react/                    # React client application
+│   ├── src/
+│   │   ├── hooks/
+│   │   │   └── useSocket.ts  # Custom hook for socket connection
+│   │   ├── shared/
+│   │   │   └── types.ts      # Shared TypeScript interfaces
+│   │   └── App.tsx           # Main UI with game phases
+│   └── package.json
+├── README.md
+```
