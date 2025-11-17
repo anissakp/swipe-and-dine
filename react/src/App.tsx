@@ -19,36 +19,33 @@ function App() {
     switch (gameState.gamePhase) {
       case "idle":
         return (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Swipe & Dine</h2>
-            <p className="text-gray-600">
+          <div>
+            <h2>Swipe & Dine</h2>
+            <p>
               Connection Status:{" "}
-              <span className={isConnected ? "text-green-500" : "text-red-500"}>
+              <span>
                 {isConnected ? "Connected" : "Disconnected"}
               </span>
             </p>
 
-            <div className="space-y-2">
+            <div>
               <button
                 onClick={createRoom}
                 disabled={!isConnected}
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50"
               >
                 Create Room
               </button>
 
-              <div className="flex space-x-2">
+              <div>
                 <input
                   type="text"
                   value={joinCode}
                   onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                   placeholder="Enter room code"
-                  className="flex-1 border rounded px-3 py-2"
                 />
                 <button
                   onClick={() => joinRoom(joinCode)}
                   disabled={!isConnected || !joinCode}
-                  className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 disabled:opacity-50"
                 >
                   Join
                 </button>
@@ -59,24 +56,24 @@ function App() {
 
       case "waiting":
         return (
-          <div className="space-y-4 text-center">
-            <h2 className="text-2xl font-bold">Waiting Room</h2>
-            <p className="text-lg">
+          <div>
+            <h2>Waiting Room</h2>
+            <p>
               Room Code:{" "}
-              <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+              <span>
                 {gameState.roomCode}
               </span>
             </p>
-            <p className="text-gray-600">Players: {gameState.playerCount}/2</p>
-            <p className="animate-pulse">Waiting for another player...</p>
+            <p>Players: {gameState.playerCount}/2</p>
+            <p>Waiting for another player...</p>
           </div>
         );
 
       case "input":
         return (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Add Restaurants</h2>
-            <p className="text-gray-600">Enter 3 restaurant suggestions:</p>
+          <div>
+            <h2>Add Restaurants</h2>
+            <p>Enter 3 restaurant suggestions:</p>
 
             {restaurantInputs.map((value, index) => (
               <input
@@ -89,7 +86,6 @@ function App() {
                   setRestaurantInputs(newInputs);
                 }}
                 placeholder={`Restaurant ${index + 1}`}
-                className="w-full border rounded px-3 py-2"
               />
             ))}
 
@@ -101,7 +97,6 @@ function App() {
                 }
               }}
               disabled={restaurantInputs.filter((r) => r.trim()).length < 3}
-              className="w-full bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 disabled:opacity-50"
             >
               Submit Restaurants
             </button>
@@ -110,34 +105,31 @@ function App() {
 
       case "playing":
         return (
-          <div className="space-y-4 text-center">
-            <h2 className="text-2xl font-bold">Make Your Choice</h2>
-            <p className="text-gray-600">
+          <div>
+            <h2>Make Your Choice</h2>
+            <p>
               Card {gameState.cardIndex + 1} of {gameState.totalCards}
             </p>
 
             {gameState.currentCard && !gameState.isWaiting && (
-              <div className="bg-white shadow-lg rounded-lg p-8 border-2 border-gray-200">
-                <h3 className="text-3xl font-bold mb-4">
+              <div>
+                <h3>
                   {gameState.currentCard.name}
                 </h3>
 
-                <div className="flex justify-center space-x-4">
+                <div>
                   <button
                     onClick={() => makeChoice(gameState.currentCard!.id, "YES")}
-                    className="bg-green-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-green-600"
                   >
                     YES
                   </button>
                   <button
                     onClick={() => makeChoice(gameState.currentCard!.id, "NEUTRAL")}
-                    className="bg-yellow-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-yellow-600"
                   >
                     NEUTRAL
                   </button>
                   <button
                     onClick={() => makeChoice(gameState.currentCard!.id, "NO")}
-                    className="bg-red-500 text-white py-3 px-8 rounded-lg text-xl hover:bg-red-600"
                   >
                     NO
                   </button>
@@ -146,8 +138,8 @@ function App() {
             )}
 
             {gameState.isWaiting && (
-              <div className="bg-blue-50 p-8 rounded-lg">
-                <p className="text-blue-600 text-xl">
+              <div>
+                <p>
                   You're done! Waiting for other player to finish...
                 </p>
               </div>
@@ -157,34 +149,34 @@ function App() {
 
       case "ended":
         return (
-          <div className="space-y-4 text-center">
-            <h2 className="text-2xl font-bold">🎉 Game Over!</h2>
+          <div>
+            <h2>🎉 Game Over!</h2>
 
-            <div className="bg-green-50 p-4 rounded">
-              <h3 className="text-xl font-semibold text-green-700">
+            <div>
+              <h3>
                 Matches ({gameState.matches.length})
               </h3>
               {gameState.matches.length > 0 ? (
-                <ul className="mt-2">
+                <ul>
                   {gameState.matches.map((r) => (
-                    <li key={r.id} className="text-green-600">
+                    <li key={r.id}>
                       ✓ {r.name}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-600">No matches found</p>
+                <p>No matches found</p>
               )}
             </div>
 
             {gameState.neutrals.length > 0 && (
-              <div className="bg-yellow-50 p-4 rounded">
-                <h3 className="text-xl font-semibold text-yellow-700">
+              <div>
+                <h3>
                   Neutral Options ({gameState.neutrals.length})
                 </h3>
-                <ul className="mt-2">
+                <ul>
                   {gameState.neutrals.map((r) => (
-                    <li key={r.id} className="text-yellow-600">
+                    <li key={r.id}>
                       ~ {r.name}
                     </li>
                   ))}
@@ -194,7 +186,6 @@ function App() {
 
             <button
               onClick={() => window.location.reload()}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
               Play Again
             </button>
@@ -207,12 +198,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-md p-6">
+    <div>
+      <div>
         {gameState.error && (
-          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+          <div>
             {gameState.error}
-            <button onClick={clearError} className="absolute top-0 right-0 px-4 py-3">
+            <button onClick={clearError}>
               ×
             </button>
           </div>
