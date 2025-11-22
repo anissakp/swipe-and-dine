@@ -8,7 +8,7 @@ import {
   MatchResult,
 } from "../shared/types";
 
-// WebSocket server URL - must match the server's listening port
+// webSocket server URL - must match the server's listening port
 const SOCKET_URL = "http://localhost:3001";
 
 /**
@@ -16,23 +16,34 @@ const SOCKET_URL = "http://localhost:3001";
  * this interface tracks everything needed to render the UI and manage game flow
  */
 export interface GameState {
-  roomCode: string | null;                                        // current room code (null if not in a room)
-  playerCount: number;                                            // number of players in the room (0-2)
-  restaurants: Restaurant[];                                      // full list of restaurants for the game
-  currentCard: Restaurant | null;                                 // restaurant currently being displayed for choice
-  cardIndex: number;                                              // index of current card (0-based)
-  totalCards: number;                                             // total number of cards to go through
-  isWaiting: boolean;                                             // true if player finished and waiting for other
-  lastResult: MatchResult | null;                                 // result of last choice (currently unused)
-  matches: Restaurant[];                                          // final list of matched restaurants (both YES)
-  neutrals: Restaurant[];                                         // final list of neutral restaurants (fallback options)
-  gamePhase: "idle" | "waiting" | "input" | "playing" | "ended";  // current phase of the game
-  error: string | null;                                           // error message to display (null if no error)
+  roomCode: string | null;                                    // current room code (null if not in a room)
+  playerCount: number;                                        // number of players in the room (0-2)
+  restaurants: Restaurant[];                                  // full list of restaurants for the game
+  currentCard: Restaurant | null;                             // restaurant currently being displayed for choice
+  cardIndex: number;                                          // index of current card (0-based)
+  totalCards: number;                                         // total number of cards to go through
+  isWaiting: boolean;                                         // true if player finished and waiting for other
+  lastResult: MatchResult | null;                             // result of last choice (currently unused)
+  matches: Restaurant[];                                      // final list of matched restaurants (both YES)
+  neutrals: Restaurant[];                                     // final list of neutral restaurants (fallback options)
+  gamePhase: "idle" | "waiting" | "input" | "playing" | "ended"; // current phase of the game
+  error: string | null;                                       // error message to display (null if no error)
+  // CHANGED: added roundNumber to track runoff rounds
+  roundNumber: number;                                        // current round number (1 = first round, 2+ = runoff rounds)
 }
 
 /**
  * custom React hook that manages WebSocket connection and game state
  * encapsulates all Socket.IO logic and provides clean interface for components
+ * 
+ * @returns object containing:
+ *   - isConnected: boolean for connection status
+ *   - gameState: current game state object
+ *   - createRoom: function to create a new room
+ *   - joinRoom: function to join existing room
+ *   - submitRestaurants: function to submit restaurant list
+ *   - makeChoice: function to submit YES/NEUTRAL/NO choice
+ *   - clearError: function to dismiss error messages
  */
 export function useSocket() {
   // useRef to persist socket instance across re-renders without triggering updates
@@ -53,6 +64,8 @@ export function useSocket() {
     neutrals: [],
     gamePhase: "idle",
     error: null,
+    // CHANGED: initialize roundNumber at 1
+    roundNumber: 1,
   });
 
   // separate state for connection status (used to enable/disable UI elements)
@@ -88,7 +101,7 @@ export function useSocket() {
       setGameState((prev) => ({
         ...prev,
         roomCode,
-        gamePhase: "waiting", // Move to waiting phase for second player
+        gamePhase: "waiting", // move to waiting phase for second player
       }));
     });
 
@@ -137,13 +150,26 @@ export function useSocket() {
       }));
     });
 
+    // CHANGED: server signals a new round is starting (runoff round)
+    socket.on("newRound", (roundNumber: number, restaurants: Restaurant[]) => {
+      console.log(`Starting round ${roundNumber} with ${restaurants.length} restaurants`);
+      setGameState((prev) => ({
+        ...prev,
+        roundNumber,
+        restaurants,
+        currentCard: null,
+        isWaiting: false,
+        gamePhase: "playing", // stay in playing phase for new round
+      }));
+    });
+
     // server sends final results when both players have finished
     socket.on("gameEnd", (matches: Restaurant[], neutrals: Restaurant[]) => {
       console.log(`Game ended. Matches: ${matches.length}, Neutrals: ${neutrals.length}`);
       setGameState((prev) => ({
         ...prev,
-        matches,            // restaurants both said YES to
-        neutrals,           // fallback options (neutral votes, no NOs)
+        matches,           // restaurants both said YES to
+        neutrals,          // fallback options (neutral votes, no NOs)
         gamePhase: "ended", // transition to results screen
         currentCard: null,  // no more cards to show
       }));
@@ -180,7 +206,7 @@ export function useSocket() {
 
   /**
    * joins an existing game room
-   * roomCode - the 6-character room code to join
+   * @param roomCode - the 6-character room code to join
    * emits "joinRoom" event to server
    * server will respond with "playerJoined" or "error" event
    */
@@ -193,7 +219,7 @@ export function useSocket() {
 
   /**
    * submits player's restaurant suggestions to the server
-   * restaurants - array of restaurant name strings
+   * @param restaurants - array of restaurant name strings
    * emits "submitRestaurants" event to server
    * server will respond with "gameStart" when both players have submitted
    */
@@ -206,8 +232,8 @@ export function useSocket() {
 
   /**
    * submits player's choice for the current restaurant
-   * restaurantId - Unique ID of the restaurant being rated
-   * choice - player's vote: "YES", "NEUTRAL", or "NO"
+   * @param restaurantId - unique ID of the restaurant being rated
+   * @param choice - player's vote: "YES", "NEUTRAL", or "NO"
    * emits "makeChoice" event to server
    * server will respond with "showCard", "waitingForOther", or "gameEnd"
    */
@@ -228,12 +254,12 @@ export function useSocket() {
 
   // return public interface for components to use
   return {
-    isConnected,       // connection status for UI feedback
-    gameState,         // complete game state for rendering
-    createRoom,        // action: create new room
-    joinRoom,          // action: join existing room
-    submitRestaurants, // action: submit restaurant list
-    makeChoice,        // action: vote on restaurant
-    clearError,        // action: dismiss error message
+    isConnected,      // connection status for UI feedback
+    gameState,        // complete game state for rendering
+    createRoom,       // action: create new room
+    joinRoom,         // action: join existing room
+    submitRestaurants,// action: submit restaurant list
+    makeChoice,       // action: vote on restaurant
+    clearError,       // action: dismiss error message
   };
 }

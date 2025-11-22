@@ -2,27 +2,30 @@ import React, { useState } from "react";
 import { useSocket } from "./hooks/useSocket";
 
 function App() {
-  // custom hook that manages WebSocket connection and all game-related state/actions
+  // hook that manages WebSocket connection and all game-related state/actions
   const {
     isConnected,      // boolean indicating if WebSocket connection is active
     gameState,        // object containing current game phase, room info, cards, matches, etc.
     createRoom,       // function to create a new game room
     joinRoom,         // function to join an existing room with a code
     submitRestaurants,// function to submit player's restaurant suggestions
-    makeChoice,       // function to submit "yes" / "no" / "neutral" choice for current card
+    makeChoice,       // function to submit yes/neutral/no choice for current card
     clearError,       // function to dismiss error messages
   } = useSocket();
 
   // local state for the room code input field (used when joining a room)
   const [joinCode, setJoinCode] = useState("");
   
-  // local state for the three restaurant input fields during input phase
-  const [restaurantInputs, setRestaurantInputs] = useState<string[]>(["", "", ""]);
+  // CHANGED: local state for restaurant inputs - starts with one empty input
+  const [restaurantInputs, setRestaurantInputs] = useState<string[]>([""]);
+  
+  // CHANGED: tracks the current input being edited (only one shown at a time)
+  const [currentInputIndex, setCurrentInputIndex] = useState(0);
   
   // tracks whether current player has submitted their restaurants (prevents re-submission)
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  // styles for buttons
+  // reusable inline styles for buttons
   const buttonStyle = {
     padding: "8px 16px",
     border: "1px solid #333",
@@ -32,7 +35,7 @@ function App() {
     marginRight: "10px",
   };
 
-  // styles for input fields
+  // reusable inline styles for input fields
   const inputStyle = {
     padding: "8px",
     border: "1px solid #ccc",
@@ -46,8 +49,7 @@ function App() {
    */
   const renderContent = () => {
     switch (gameState.gamePhase) {
-      // IDLE PHASE
-      // initial screen where players can create or join a room
+      // IDLE PHASE: initial screen where players can create or join a room
       case "idle":
         return (
           <div>
@@ -88,8 +90,7 @@ function App() {
           </div>
         );
 
-      // WAITING PHASE
-      // room created, waiting for second player to join
+      // WAITING PHASE: room created, waiting for second player to join
       case "waiting":
         return (
           <div>
@@ -100,8 +101,7 @@ function App() {
           </div>
         );
 
-      // INPUT PHASE
-      // both players submit their restaurant suggestions
+      // INPUT PHASE: both players submit their restaurant suggestions
       case "input":
         return (
           <div>
@@ -110,30 +110,102 @@ function App() {
             {/* show input form if player hasn't submitted yet */}
             {!hasSubmitted ? (
               <>
-                <p>Enter 3 restaurant suggestions:</p>
+                {/* CHANGED: show count of restaurants added so far */}
+                <p>Restaurant {currentInputIndex + 1} {restaurantInputs.length > 1 && `of ${restaurantInputs.length}`}</p>
 
-                {/* render three input fields for restaurant names */}
-                {restaurantInputs.map((value, index) => (
-                  <div key={index} style={{ marginBottom: "10px" }}>
-                    <input
-                      type="text"
-                      value={value}
-                      onChange={(e) => {
-                        // update the specific input field while preserving others
-                        const newInputs = [...restaurantInputs];
-                        newInputs[index] = e.target.value;
-                        setRestaurantInputs(newInputs);
+                {/* CHANGED: show only the current input field */}
+                <div style={{ marginBottom: "10px" }}>
+                  <input
+                    type="text"
+                    value={restaurantInputs[currentInputIndex]}
+                    onChange={(e) => {
+                      // CHANGED: update the current input field
+                      const newInputs = [...restaurantInputs];
+                      newInputs[currentInputIndex] = e.target.value;
+                      setRestaurantInputs(newInputs);
+                    }}
+                    placeholder={`Enter restaurant name`}
+                    style={{ ...inputStyle, width: "250px" }}
+                  />
+                </div>
+
+                {/* CHANGED: navigation and action buttons */}
+                <div style={{ marginBottom: "10px" }}>
+                  {/* CHANGED: previous button - only show if not on first input */}
+                  {currentInputIndex > 0 && (
+                    <button
+                      onClick={() => setCurrentInputIndex(currentInputIndex - 1)}
+                      style={buttonStyle}
+                    >
+                      Previous
+                    </button>
+                  )}
+
+                  {/* CHANGED: next button - only show if current input has text and there are more inputs */}
+                  {restaurantInputs[currentInputIndex].trim() !== "" && 
+                   currentInputIndex < restaurantInputs.length - 1 && (
+                    <button
+                      onClick={() => setCurrentInputIndex(currentInputIndex + 1)}
+                      style={buttonStyle}
+                    >
+                      Next
+                    </button>
+                  )}
+
+                  {/* CHANGED: add another restaurant button - only show if current input has text */}
+                  {restaurantInputs[currentInputIndex].trim() !== "" && 
+                   currentInputIndex === restaurantInputs.length - 1 && (
+                    <button
+                      onClick={() => {
+                        // CHANGED: add new empty input and move to it
+                        setRestaurantInputs([...restaurantInputs, ""]);
+                        setCurrentInputIndex(restaurantInputs.length);
                       }}
-                      placeholder={`Restaurant ${index + 1}`}
-                      style={{ ...inputStyle, width: "250px" }}
-                    />
-                  </div>
-                ))}
+                      style={buttonStyle}
+                    >
+                      Add Another Restaurant
+                    </button>
+                  )}
 
-                {/* submit button - only enabled when all 3 fields have content */}
+                  {/* CHANGED: remove button - only show if there's more than one input */}
+                  {restaurantInputs.length > 1 && (
+                    <button
+                      onClick={() => {
+                        // CHANGED: remove current input
+                        const newInputs = restaurantInputs.filter((_, i) => i !== currentInputIndex);
+                        setRestaurantInputs(newInputs);
+                        // CHANGED: adjust current index if needed
+                        if (currentInputIndex >= newInputs.length) {
+                          setCurrentInputIndex(newInputs.length - 1);
+                        }
+                      }}
+                      style={{ ...buttonStyle, backgroundColor: "#ffcccc" }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+
+                {/* CHANGED: show list of all restaurants added so far */}
+                {restaurantInputs.filter(r => r.trim()).length > 0 && (
+                  <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "4px" }}>
+                    <strong>Restaurants added ({restaurantInputs.filter(r => r.trim()).length}):</strong>
+                    <ul style={{ marginTop: "5px", paddingLeft: "20px" }}>
+                      {restaurantInputs.map((r, i) => 
+                        r.trim() !== "" && (
+                          <li key={i} style={{ cursor: "pointer" }} onClick={() => setCurrentInputIndex(i)}>
+                            {r}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                {/* CHANGED: submit button - only enabled when at least 3 fields have content */}
                 <button
                   onClick={() => {
-                    // filter out empty inputs and validate we have at least 3
+                    // CHANGED: filter out empty inputs and validate we have at least 3
                     const validRestaurants = restaurantInputs.filter((r) => r.trim() !== "");
                     if (validRestaurants.length >= 3) {
                       submitRestaurants(validRestaurants); // send to server via WebSocket
@@ -143,7 +215,7 @@ function App() {
                   disabled={restaurantInputs.filter((r) => r.trim()).length < 3}
                   style={buttonStyle}
                 >
-                  Submit Restaurants
+                  Submit Restaurants ({restaurantInputs.filter(r => r.trim()).length}/3 minimum)
                 </button>
               </>
             ) : (
@@ -156,12 +228,17 @@ function App() {
           </div>
         );
 
-      // PLAYING PHASE:
-      // players swipe through restaurant cards making choices
+      // PLAYING PHASE: players swipe through restaurant cards making choices
       case "playing":
         return (
           <div>
             <h2>Make Your Choice</h2>
+            {/* CHANGED: display round number if it's a runoff round */}
+            {gameState.roundNumber > 1 && (
+              <p>
+                Runoff Round {gameState.roundNumber} - narrowing down your options!
+              </p>
+            )}
             {/* display progress through the deck */}
             <p>Card {gameState.cardIndex + 1} of {gameState.totalCards}</p>
 
@@ -194,8 +271,7 @@ function App() {
           </div>
         );
 
-      // ENDED PHASE
-      // game complete, display results and matches
+      // ENDED PHASE: game complete, display results and matches
       case "ended":
         return (
           <div>

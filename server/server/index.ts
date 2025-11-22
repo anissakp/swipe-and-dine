@@ -37,6 +37,8 @@ interface GameRoom {
   matches: Restaurant[];                       // restaurants both players said YES to
   neutrals: Restaurant[];                      // restaurants with at least one NEUTRAL (no NO)
   submittedPlayers: Set<string>;               // socket IDs of players who've submitted restaurants
+  // CHANGED: added round number to track runoff rounds when multiple matches exist
+  roundNumber: number;                         // current round number (starts at 1)
 }
 
 // in-memory storage for all active game rooms (roomCode -> GameRoom)
@@ -51,7 +53,7 @@ function generateRoomCode(): string {
 }
 
 /**
- * fisher-yates shuffle algorithm to randomize array order
+ * fisher-Yates shuffle algorithm to randomize array order
  * used to shuffle the combined restaurant list before game starts
  * @param array - array to shuffle
  * @returns new shuffled array (does not mutate original)
@@ -63,6 +65,48 @@ function shuffleArray<T>(array: T[]): T[] {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
+}
+
+/**
+ * CHANGED: helper function to start a new round with given restaurants
+ * creates shuffled decks for each player and sends first card
+ * @param room - the game room
+ * @param restaurants - restaurants to include in this round
+ * @param roomCode - the room code for emitting events
+ * @param io - Socket.IO server instance
+ */
+function startNewRound(
+  room: GameRoom, 
+  restaurants: Restaurant[], 
+  roomCode: string, 
+  io: Server<ClientToServerEvents, ServerToClientEvents>
+): void {
+  // clear previous round's choices for new voting
+  room.choices.clear();
+  
+  // create a differently shuffled deck for EACH player
+  room.players.forEach((playerId) => {
+    const playerDeck = shuffleArray(restaurants);
+    room.playerDecks.set(playerId, playerDeck);
+    room.playerCardIndices.set(playerId, 0); // start at index 0
+    
+    console.log(`\nPlayer ${playerId}'s shuffled order for round ${room.roundNumber}:`);
+    playerDeck.forEach((r, i) => {
+      console.log(`  ${i + 1}. ${r.name}`);
+    });
+  });
+
+  // notify all players that a new round is starting
+  io.to(roomCode).emit("newRound", room.roundNumber, restaurants);
+
+  // send each player their FIRST card from their own shuffled deck
+  room.players.forEach((playerId) => {
+    const playerDeck = room.playerDecks.get(playerId)!;
+    const playerSocket = io.sockets.sockets.get(playerId);
+    if (playerSocket && playerDeck.length > 0) {
+      playerSocket.emit("showCard", playerDeck[0], 0, playerDeck.length);
+    }
+  });
 }
 
 // main connection handler - runs for each new WebSocket connection
@@ -91,6 +135,8 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents>)
       matches: [],
       neutrals: [],
       submittedPlayers: new Set(),
+      // CHANGED: initialize round number at 1
+      roundNumber: 1,
     };
 
     // store room in memory and associate socket with it
@@ -191,29 +237,11 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents>)
         console.log(`  ${i + 1}. ${r.name}`);
       });
 
-      // CHANGED: create a differently shuffled deck for EACH player instead of one shared deck
-      room.players.forEach((playerId) => {
-        const playerDeck = shuffleArray(uniqueRestaurants);
-        room.playerDecks.set(playerId, playerDeck);
-        room.playerCardIndices.set(playerId, 0); // start at index 0
-        
-        console.log(`\nPlayer ${playerId}'s shuffled order:`);
-        playerDeck.forEach((r, i) => {
-          console.log(`  ${i + 1}. ${r.name}`);
-        });
-      });
-
       // notify all players in room that game is starting
       io.to(currentRoom).emit("gameStart", room.restaurants);
 
-      // CHANGED: send each player their FIRST card from their own shuffled deck
-      room.players.forEach((playerId) => {
-        const playerDeck = room.playerDecks.get(playerId)!;
-        const playerSocket = io.sockets.sockets.get(playerId);
-        if (playerSocket && playerDeck.length > 0) {
-          playerSocket.emit("showCard", playerDeck[0], 0, playerDeck.length);
-        }
-      });
+      // CHANGED: use helper function to start the first round
+      startNewRound(room, uniqueRestaurants, currentRoom, io);
     } else {
       console.log(`Waiting for other player to submit...\n`);
     }
@@ -301,10 +329,31 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents>)
           }
         });
 
-        console.log(`Final results: ${room.matches.length} matches, ${room.neutrals.length} neutrals`);
+        console.log(`Round ${room.roundNumber} results: ${room.matches.length} matches, ${room.neutrals.length} neutrals`);
         
-        // broadcast final results to all players in the room
-        io.to(currentRoom).emit("gameEnd", room.matches, room.neutrals);
+        // CHANGED: if multiple matches exist, start a runoff round to narrow down
+        if (room.matches.length >= 2) {
+          console.log(`Multiple matches found! Starting runoff round ${room.roundNumber + 1}...`);
+          
+          // increment round number
+          room.roundNumber++;
+          
+          // use matches as the restaurant list for next round
+          const runoffRestaurants = [...room.matches];
+          
+          // clear matches and neutrals for new round
+          room.matches = [];
+          room.neutrals = [];
+          
+          // start a new round with just the matched restaurants
+          startNewRound(room, runoffRestaurants, currentRoom, io);
+        } 
+        // CHANGED: if 0 or 1 match, end the game normally
+        else {
+          console.log(`Final results: ${room.matches.length} matches, ${room.neutrals.length} neutrals`);
+          // broadcast final results to all players in the room
+          io.to(currentRoom).emit("gameEnd", room.matches, room.neutrals);
+        }
       }
     }
   });
