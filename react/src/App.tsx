@@ -16,11 +16,8 @@ function App() {
   // local state for the room code input field (used when joining a room)
   const [joinCode, setJoinCode] = useState("");
   
-  // CHANGED: local state for restaurant inputs - starts with one empty input
-  const [restaurantInputs, setRestaurantInputs] = useState<string[]>([""]);
-  
-  // CHANGED: tracks the current input being edited (only one shown at a time)
-  const [currentInputIndex, setCurrentInputIndex] = useState(0);
+  // CHANGED: local state for restaurant inputs - starts with three empty inputs
+  const [restaurantInputs, setRestaurantInputs] = useState<string[]>(["", "", ""]);
   
   // tracks whether current player has submitted their restaurants (prevents re-submission)
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -63,28 +60,37 @@ function App() {
               </span>
             </p>
 
-            <div>
-              {/* button to create a new game room - disabled if not connected */}
-              <button onClick={createRoom} disabled={!isConnected} style={{ ...buttonStyle, marginBottom: "10px" }}>
-                Create Room
-              </button>
-
-              {/* join room section with code input */}
-              <div>
-                <input
-                  type="text"
-                  value={joinCode}
-                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())} // auto-uppercase room codes
-                  placeholder="Enter room code"
-                  style={{ ...inputStyle, marginRight: "10px" }}
-                />
-                <button
-                  onClick={() => joinRoom(joinCode)}
-                  disabled={!isConnected || !joinCode} // disabled if not connected or no code entered
-                  style={buttonStyle}
-                >
-                  Join
+            {/* CHANGED: restructured layout to clearly separate create vs join options */}
+            <div style={{ marginTop: "30px" }}>
+              {/* CHANGED: create new room section with clear heading and explanation */}
+              <div style={{ marginBottom: "30px" }}>
+                <h3 style={{ marginTop: "0" }}>Start a New Game</h3>
+                <p>Create a room and share the code with your friend</p>
+                <button onClick={createRoom} disabled={!isConnected} style={buttonStyle}>
+                  Create Room
                 </button>
+              </div>
+
+              {/* CHANGED: join existing room section with clear heading, explanation, and "Join Room" button label */}
+              <div>
+                <h3 style={{ marginTop: "0" }}>Join Existing Room</h3>
+                <p>Enter the room code your friend shared with you</p>
+                <div>
+                  <input
+                    type="text"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())} // auto-uppercase room codes
+                    placeholder="Enter room code"
+                    style={{ ...inputStyle, marginRight: "10px" }}
+                  />
+                  <button
+                    onClick={() => joinRoom(joinCode)}
+                    disabled={!isConnected || !joinCode} // disabled if not connected or no code entered
+                    style={buttonStyle}
+                  >
+                    Join Room
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -110,102 +116,40 @@ function App() {
             {/* show input form if player hasn't submitted yet */}
             {!hasSubmitted ? (
               <>
-                {/* CHANGED: show count of restaurants added so far */}
-                <p>Restaurant {currentInputIndex + 1} {restaurantInputs.length > 1 && `of ${restaurantInputs.length}`}</p>
+                <p>Add at least 3 restaurants</p>
 
-                {/* CHANGED: show only the current input field */}
-                <div style={{ marginBottom: "10px" }}>
-                  <input
-                    type="text"
-                    value={restaurantInputs[currentInputIndex]}
-                    onChange={(e) => {
-                      // CHANGED: update the current input field
-                      const newInputs = [...restaurantInputs];
-                      newInputs[currentInputIndex] = e.target.value;
-                      setRestaurantInputs(newInputs);
-                    }}
-                    placeholder={`Enter restaurant name`}
-                    style={{ ...inputStyle, width: "250px" }}
-                  />
+                {/* CHANGED: show all input fields at once (removed navigation/current index logic) */}
+                <div style={{ marginBottom: "20px" }}>
+                  {restaurantInputs.map((restaurant, index) => (
+                    <div key={index} style={{ marginBottom: "10px" }}>
+                      <input
+                        type="text"
+                        value={restaurant}
+                        onChange={(e) => {
+                          // CHANGED: update any input directly (no currentInputIndex needed)
+                          const newInputs = [...restaurantInputs];
+                          newInputs[index] = e.target.value;
+                          setRestaurantInputs(newInputs);
+                        }}
+                        placeholder={`Restaurant ${index + 1}`}
+                        style={{ ...inputStyle, width: "250px" }}
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {/* CHANGED: navigation and action buttons */}
-                <div style={{ marginBottom: "10px" }}>
-                  {/* CHANGED: previous button - only show if not on first input */}
-                  {currentInputIndex > 0 && (
-                    <button
-                      onClick={() => setCurrentInputIndex(currentInputIndex - 1)}
-                      style={buttonStyle}
-                    >
-                      Previous
-                    </button>
-                  )}
+                {/* CHANGED: plus button to add another input */}
+                <button
+                  onClick={() => setRestaurantInputs([...restaurantInputs, ""])}
+                  style={{ ...buttonStyle, marginBottom: "20px" }}
+                >
+                  + Add Another Restaurant
+                </button>
 
-                  {/* CHANGED: next button - only show if current input has text and there are more inputs */}
-                  {restaurantInputs[currentInputIndex].trim() !== "" && 
-                   currentInputIndex < restaurantInputs.length - 1 && (
-                    <button
-                      onClick={() => setCurrentInputIndex(currentInputIndex + 1)}
-                      style={buttonStyle}
-                    >
-                      Next
-                    </button>
-                  )}
-
-                  {/* CHANGED: add another restaurant button - only show if current input has text */}
-                  {restaurantInputs[currentInputIndex].trim() !== "" && 
-                   currentInputIndex === restaurantInputs.length - 1 && (
-                    <button
-                      onClick={() => {
-                        // CHANGED: add new empty input and move to it
-                        setRestaurantInputs([...restaurantInputs, ""]);
-                        setCurrentInputIndex(restaurantInputs.length);
-                      }}
-                      style={buttonStyle}
-                    >
-                      Add Another Restaurant
-                    </button>
-                  )}
-
-                  {/* CHANGED: remove button - only show if there's more than one input */}
-                  {restaurantInputs.length > 1 && (
-                    <button
-                      onClick={() => {
-                        // CHANGED: remove current input
-                        const newInputs = restaurantInputs.filter((_, i) => i !== currentInputIndex);
-                        setRestaurantInputs(newInputs);
-                        // CHANGED: adjust current index if needed
-                        if (currentInputIndex >= newInputs.length) {
-                          setCurrentInputIndex(newInputs.length - 1);
-                        }
-                      }}
-                      style={{ ...buttonStyle, backgroundColor: "#ffcccc" }}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-
-                {/* CHANGED: show list of all restaurants added so far */}
-                {restaurantInputs.filter(r => r.trim()).length > 0 && (
-                  <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f9f9f9", borderRadius: "4px" }}>
-                    <strong>Restaurants added ({restaurantInputs.filter(r => r.trim()).length}):</strong>
-                    <ul style={{ marginTop: "5px", paddingLeft: "20px" }}>
-                      {restaurantInputs.map((r, i) => 
-                        r.trim() !== "" && (
-                          <li key={i} style={{ cursor: "pointer" }} onClick={() => setCurrentInputIndex(i)}>
-                            {r}
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-                )}
-
-                {/* CHANGED: submit button - only enabled when at least 3 fields have content */}
+                {/* submit button - only enabled when at least 3 fields have content */}
                 <button
                   onClick={() => {
-                    // CHANGED: filter out empty inputs and validate we have at least 3
+                    // CHANGED: filter out empty inputs and validate there are at least 3
                     const validRestaurants = restaurantInputs.filter((r) => r.trim() !== "");
                     if (validRestaurants.length >= 3) {
                       submitRestaurants(validRestaurants); // send to server via WebSocket
@@ -320,7 +264,7 @@ function App() {
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       {/* global error display with dismiss button */}
       {gameState.error && (
-        <div style={{ color: "red", marginBottom: "10px" }}>
+        <div style={{ marginBottom: "10px" }}>
           {gameState.error}
           <button onClick={clearError} style={{ ...buttonStyle, marginLeft: "10px" }}>×</button>
         </div>

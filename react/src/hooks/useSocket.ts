@@ -32,19 +32,7 @@ export interface GameState {
   roundNumber: number;                                        // current round number (1 = first round, 2+ = runoff rounds)
 }
 
-/**
- * custom React hook that manages WebSocket connection and game state
- * encapsulates all Socket.IO logic and provides clean interface for components
- * 
- * @returns object containing:
- *   - isConnected: boolean for connection status
- *   - gameState: current game state object
- *   - createRoom: function to create a new room
- *   - joinRoom: function to join existing room
- *   - submitRestaurants: function to submit restaurant list
- *   - makeChoice: function to submit YES/NEUTRAL/NO choice
- *   - clearError: function to dismiss error messages
- */
+/* custom React hook that manages WebSocket connection and game state */
 export function useSocket() {
   // useRef to persist socket instance across re-renders without triggering updates
   // this prevents socket from being recreated on every render
@@ -146,7 +134,7 @@ export function useSocket() {
       console.log("Waiting for other player to finish...");
       setGameState((prev) => ({
         ...prev,
-        isWaiting: true, // show waiting message in UI
+        isWaiting: true, // show waiting message 
       }));
     });
 
@@ -205,11 +193,7 @@ export function useSocket() {
   }, []);
 
   /**
-   * joins an existing game room
-   * @param roomCode - the 6-character room code to join
-   * emits "joinRoom" event to server
-   * server will respond with "playerJoined" or "error" event
-   */
+   * joins an existing game room */
   const joinRoom = useCallback((roomCode: string) => {
     if (socketRef.current) {
       console.log(`Attempting to join room: ${roomCode}`);
@@ -217,12 +201,7 @@ export function useSocket() {
     }
   }, []);
 
-  /**
-   * submits player's restaurant suggestions to the server
-   * @param restaurants - array of restaurant name strings
-   * emits "submitRestaurants" event to server
-   * server will respond with "gameStart" when both players have submitted
-   */
+  /* submits player's restaurant suggestions to the server */
   const submitRestaurants = useCallback((restaurants: string[]) => {
     if (socketRef.current) {
       console.log("Submitting restaurants:", restaurants);
@@ -230,13 +209,7 @@ export function useSocket() {
     }
   }, []);
 
-  /**
-   * submits player's choice for the current restaurant
-   * @param restaurantId - unique ID of the restaurant being rated
-   * @param choice - player's vote: "YES", "NEUTRAL", or "NO"
-   * emits "makeChoice" event to server
-   * server will respond with "showCard", "waitingForOther", or "gameEnd"
-   */
+  /* submits player's choice for the current restaurant */
   const makeChoice = useCallback((restaurantId: string, choice: Choice) => {
     if (socketRef.current) {
       console.log(`Making choice: ${choice} for restaurant ${restaurantId}`);
