@@ -11,28 +11,26 @@ import {
 // webSocket server URL - must match the server's listening port
 const SOCKET_URL = "http://localhost:3001";
 
-/**
- * represents the complete client-side game state
- * this interface tracks everything needed to render the UI and manage game flow
- */
+// represents the complete client-side game state
+// this interface tracks everything needed to render the UI and manage game flow
 export interface GameState {
-  roomCode: string | null;                                    // current room code (null if not in a room)
-  playerCount: number;                                        // number of players in the room (0-2)
-  restaurants: Restaurant[];                                  // full list of restaurants for the game
-  currentCard: Restaurant | null;                             // restaurant currently being displayed for choice
-  cardIndex: number;                                          // index of current card (0-based)
-  totalCards: number;                                         // total number of cards to go through
-  isWaiting: boolean;                                         // true if player finished and waiting for other
-  lastResult: MatchResult | null;                             // result of last choice (currently unused)
-  matches: Restaurant[];                                      // final list of matched restaurants (both YES)
-  neutrals: Restaurant[];                                     // final list of neutral restaurants (fallback options)
-  gamePhase: "idle" | "waiting" | "input" | "playing" | "ended"; // current phase of the game
-  error: string | null;                                       // error message to display (null if no error)
+  roomCode: string | null;                                        // current room code (null if not in a room)
+  playerCount: number;                                            // number of players in the room (0-2)
+  restaurants: Restaurant[];                                      // full list of restaurants for the game
+  currentCard: Restaurant | null;                                 // restaurant currently being displayed for choice
+  cardIndex: number;                                              // index of current card (0-based)
+  totalCards: number;                                             // total number of cards to go through
+  isWaiting: boolean;                                             // true if player finished and waiting for other
+  lastResult: MatchResult | null;                                 // result of last choice (currently unused)
+  matches: Restaurant[];                                          // final list of matched restaurants (both YES)
+  neutrals: Restaurant[];                                         // final list of neutral restaurants (fallback options)
+  gamePhase: "idle" | "waiting" | "input" | "playing" | "ended";  // current phase of the game
+  error: string | null;                                           // error message to display (null if no error)
   // CHANGED: added roundNumber to track runoff rounds
-  roundNumber: number;                                        // current round number (1 = first round, 2+ = runoff rounds)
+  roundNumber: number;                                            // current round number (1 = first round, 2+ = runoff rounds)
 }
 
-/* custom React hook that manages WebSocket connection and game state */
+// custom React hook that manages WebSocket connection and game state
 export function useSocket() {
   // useRef to persist socket instance across re-renders without triggering updates
   // this prevents socket from being recreated on every render
@@ -56,14 +54,12 @@ export function useSocket() {
     roundNumber: 1,
   });
 
-  // separate state for connection status (used to enable/disable UI elements)
+  // separate state for connection status 
   const [isConnected, setIsConnected] = useState(false);
 
-  /**
-   * effect hook to establish and manage WebSocket connection
-   * runs once on component mount, cleans up on unmount
-   * sets up all event listeners for server-to-client communication
-   */
+  // effect hook to establish and manage WebSocket connection
+  // runs once on component mount, cleans up on unmount
+  // sets up all event listeners for server-to-client communication
   useEffect(() => {
     // create new Socket.IO connection with typed events
     const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_URL);
@@ -156,8 +152,8 @@ export function useSocket() {
       console.log(`Game ended. Matches: ${matches.length}, Neutrals: ${neutrals.length}`);
       setGameState((prev) => ({
         ...prev,
-        matches,           // restaurants both said YES to
-        neutrals,          // fallback options (neutral votes, no NOs)
+        matches,            // restaurants both said YES to
+        neutrals,           // fallback options (neutral votes, no NOs)
         gamePhase: "ended", // transition to results screen
         currentCard: null,  // no more cards to show
       }));
@@ -192,8 +188,7 @@ export function useSocket() {
     }
   }, []);
 
-  /**
-   * joins an existing game room */
+  // joins an existing game room 
   const joinRoom = useCallback((roomCode: string) => {
     if (socketRef.current) {
       console.log(`Attempting to join room: ${roomCode}`);
@@ -217,22 +212,20 @@ export function useSocket() {
     }
   }, []);
 
-  /**
-   * clears the current error message from game state
-   * called when user dismisses error notification
-   */
+  // clears the current error message from game state
+  // called when user dismisses error notification
   const clearError = useCallback(() => {
     setGameState((prev) => ({ ...prev, error: null }));
   }, []);
 
   // return public interface for components to use
   return {
-    isConnected,      // connection status for UI feedback
-    gameState,        // complete game state for rendering
-    createRoom,       // action: create new room
-    joinRoom,         // action: join existing room
-    submitRestaurants,// action: submit restaurant list
-    makeChoice,       // action: vote on restaurant
-    clearError,       // action: dismiss error message
+    isConnected,       // connection status for UI feedback
+    gameState,         // complete game state for rendering
+    createRoom,        // action: create new room
+    joinRoom,          // action: join existing room
+    submitRestaurants, // action: submit restaurant list
+    makeChoice,        // action: vote on restaurant
+    clearError,        // action: dismiss error message
   };
 }

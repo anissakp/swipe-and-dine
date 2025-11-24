@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSocket } from "./hooks/useSocket";
 
 function App() {
-  // hook that manages WebSocket connection and all game-related state/actions
+  // hook that manages WebSocket connection and all game logic
   const {
     isConnected,      // boolean indicating if WebSocket connection is active
     gameState,        // object containing current game phase, room info, cards, matches, etc.
@@ -276,3 +276,11 @@ function App() {
 }
 
 export default App;
+
+// data flow
+// 1. player 1 creates / joins room -> websocket event -> server assigns room
+// 2. players submit restaurants -> arrays sent to server -> combined into deck
+// 3. server shuffles deck -> sends cards one by one
+// 4. players vote -> votes sent to server -> server calculates matches
+// 5. if multiple matches -> runoff round with just those restaurants
+// 6. final results displayed 
