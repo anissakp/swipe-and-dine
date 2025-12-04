@@ -36,7 +36,7 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
           textAlign: "center",
         }}
       >
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Typography variant="h4" gutterBottom>
           Add Restaurants
         </Typography>
         
