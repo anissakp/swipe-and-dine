@@ -68,11 +68,9 @@ function App() {
         return (
           <RestaurantInput
             submitRestaurants={submitRestaurants}
-            buttonStyle={buttonStyle}
-            inputStyle={inputStyle}
           />
         );
-
+  
       // PLAYING PHASE: players swipe through restaurant cards making choices
       case "playing":
         return (
