@@ -81,7 +81,6 @@ function App() {
             roundNumber={gameState.roundNumber}
             isWaiting={gameState.isWaiting}
             makeChoice={makeChoice}
-            buttonStyle={buttonStyle}
           />
         );
 
