@@ -124,10 +124,10 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
                   color: "#b0b0b0",
                 },
                 "&:not(.Mui-disabled)": {
-                  backgroundColor: "#8b9499",
+                  backgroundColor: "#b0b0b0",
                   color: "white",
                   "&:hover": {
-                    backgroundColor: "#727a7fff",
+                    backgroundColor: "#909090",
                     boxShadow: "none",
                   },
                 },

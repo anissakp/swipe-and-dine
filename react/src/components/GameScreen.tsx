@@ -176,11 +176,6 @@ export function GameScreen({
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             {currentCard.name}
           </Typography>
-
-          {/* subtitle */}
-          <Typography variant="body1" color="text.secondary">
-            Choose wisely!
-          </Typography>
         </Paper>
       )}
 
@@ -205,7 +200,7 @@ export function GameScreen({
               <CloseIcon sx={{ fontSize: 35 }} />
             </IconButton>
             <Typography variant="body2" color="error.main" fontWeight="500">
-              Nope
+              No
             </Typography>
           </Box>
 
@@ -227,7 +222,7 @@ export function GameScreen({
               <RemoveIcon sx={{ fontSize: 35 }} />
             </IconButton>
             <Typography variant="body2" sx={{ color: "#eab308" }} fontWeight="500">
-              Maybe
+              Neutral
             </Typography>
           </Box>
 
@@ -249,7 +244,7 @@ export function GameScreen({
               <CheckIcon sx={{ fontSize: 35 }} />
             </IconButton>
             <Typography variant="body2" color="success.main" fontWeight="500">
-              Love it
+              Yes
             </Typography>
           </Box>
         </Box>

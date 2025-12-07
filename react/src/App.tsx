@@ -49,8 +49,6 @@ function App() {
             isConnected={isConnected}
             createRoom={createRoom}
             joinRoom={joinRoom}
-            buttonStyle={buttonStyle}
-            inputStyle={inputStyle}
           />
         );
 
