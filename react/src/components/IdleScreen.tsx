@@ -41,7 +41,7 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fef2f2 100%)",
+        background: "linear-gradient(135deg, #e6f2e9 0%, #ffe8ca 100%)",
         padding: 0,
         margin: 0,
         position: "fixed",
@@ -51,13 +51,15 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
     >
       {/* centered white card containing all UI elements */}
       <Paper
-        elevation={3}
+        elevation={5}
         sx={{
           maxWidth: 500,
           width: "100%",
           padding: 5,
-          borderRadius: 6,
+          borderRadius: 12,
           textAlign: "center",
+          boxShadow: "0 10px 30px 10px rgba(0, 0, 0, 0.15)",
+          border: "1px solid rgba(0, 0, 0, 0.10)",
         }}
       >
         {/* circular gradient background with fork and knife icon */}
@@ -67,7 +69,7 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
             width: 80,
             height: 80,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, #ff7e5f, #feb47b)",
+            background: "linear-gradient(135deg, #ffb263, #ffc16e )",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -78,7 +80,7 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
         </Box>
 
         {/* main title */}
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" fontWeight={500} gutterBottom>
           Swipe & Dine
         </Typography>
 
@@ -128,19 +130,19 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
           sx={{
             mb: 3,
             py: 1.8,
-            backgroundColor: "#b0b0b0",
+            backgroundColor: "#5aaf86",
             color: "white",
             textTransform: "none",
             fontSize: 16,
-            borderRadius: "8px",
+            borderRadius: "14px",
             boxShadow: "none",
             "&:hover": {
-              backgroundColor: "#909090",
+              backgroundColor: "#5aaf86",
               boxShadow: "none",
             },
             "&:disabled": {
-              backgroundColor: "#d0d0d0",
-              color: "#a0a0a0",
+              backgroundColor: "#e6f2e9",
+              color: "#bbe4ca",
             },
           }}
         >
@@ -166,16 +168,13 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
             mb: 2,
             "& .MuiOutlinedInput-root": {
               backgroundColor: "#fafafa",
-              borderRadius: "12px",
+              borderRadius: "14px",
               "& fieldset": {
-                borderColor: "#e0e0e0",
+                borderColor: "#ced1d0ff",
               },
               "&:hover fieldset": {
-                borderColor: "#d0d0d0",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#2196F3",
-              },
+                borderColor: "#ced1d0ff",
+              }
             },
             "& input": {
               padding: "14px 16px",
@@ -197,17 +196,18 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
             textTransform: "none",
             fontSize: 16,
             py: 1.8,
-            borderRadius: "8px",
+            borderRadius: "14px",
             boxShadow: "none",
             "&.Mui-disabled": {
-              backgroundColor: "#e8e8e8",
-              color: "#b0b0b0",
+              backgroundColor: "#ced1d0ff",
+              color: "white",
+              //opacity: 0.5
             },
             "&:not(.Mui-disabled)": {
-              backgroundColor: "#b0b0b0",
+              backgroundColor: "#5aaf86",
               color: "white",
               "&:hover": {
-                backgroundColor: "#909090",
+                backgroundColor: "#5aaf86",
                 boxShadow: "none",
               },
             },

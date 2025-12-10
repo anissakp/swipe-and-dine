@@ -7,8 +7,8 @@ import { Restaurant } from "../shared/types";
 // props interface for results screen
 // this screen displays after both players finish voting on all restaurants
 interface ResultsScreenProps {
-  matches: Restaurant[];   // restaurants where both players voted yes
-  neutrals: Restaurant[];  // restaurants with at least one neutral vote and no no votes
+  matches: Restaurant[]; // restaurants where both players voted yes
+  neutrals: Restaurant[]; // restaurants with at least one neutral vote and no no votes
 }
 
 // results screen component: displays final matches and neutral options
@@ -26,7 +26,7 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fef2f2 100%)",
+        background: "linear-gradient(135deg, #e6f2e9 0%, #ffe8ca 100%)",
         padding: 0,
         margin: 0,
         position: "fixed",
@@ -36,17 +36,19 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
     >
       {/* centered white card containing all UI elements */}
       <Paper
-        elevation={3}
+        elevation={5}
         sx={{
           maxWidth: 500,
           width: "100%",
           padding: 5,
-          borderRadius: 6,
+          borderRadius: 12,
           textAlign: "center",
+          boxShadow: "0 10px 30px 10px rgba(0, 0, 0, 0.15)",
+          border: "1px solid rgba(0, 0, 0, 0.10)",
         }}
       >
         {/* main title indicating game completion */}
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={500} gutterBottom sx={{ mb: 4 }}>
           Game Over!
         </Typography>
 
@@ -54,14 +56,14 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
         {/* these are the ideal choices where both players said yes */}
         {/* displays count in parentheses for quick reference */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" fontWeight={500} gutterBottom>
             Matches ({matches.length})
           </Typography>
           
           {matches.length > 0 ? (
             // green background box containing all matched restaurants
             <Box sx={{ 
-              backgroundColor: "#f0fdf4", 
+              backgroundColor: "#e6f2e9", 
               borderRadius: "12px", 
               padding: 3,
               mt: 2 
@@ -74,11 +76,11 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
                   variant="body1" 
                   sx={{ 
                     py: 1,
-                    color: "#16a34a",
+                    color: "#5aaf86",
                     fontWeight: 500
                   }}
                 >
-                  {r.name}
+                  ✓ {r.name}
                 </Typography>
               ))}
             </Box>
@@ -98,7 +100,7 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
             {/* visual divider between matches and neutral sections */}
             <Divider sx={{ my: 3 }} />
             <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" gutterBottom>
+              <Typography variant="h5" fontWeight={500} gutterBottom>
                 Neutral Options ({neutrals.length})
               </Typography>
               
@@ -141,14 +143,14 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
           sx={{
             mt: 2,
             py: 1.8,
-            backgroundColor: "#b0b0b0",
+            backgroundColor: "#5aaf86",
             color: "white",
             textTransform: "none",
             fontSize: 16,
-            borderRadius: "8px",
+            borderRadius: "12px",
             boxShadow: "none",
             "&:hover": {
-              backgroundColor: "#909090",
+              backgroundColor: "#5aaf86",
               boxShadow: "none",
             },
           }}

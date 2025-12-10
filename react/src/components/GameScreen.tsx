@@ -79,7 +79,7 @@ export function GameScreen({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fef2f2 100%)",
+        background: "linear-gradient(135deg, #e6f2e9 0%, #ffe8ca 100%)",
         padding: 0,
         margin: 0,
         position: "fixed",
@@ -147,7 +147,7 @@ export function GameScreen({
             height: 6,
             backgroundColor: "#f0f0f0",
             "& .MuiLinearProgress-bar": {
-              backgroundColor: timeLeft <= 3 ? "#ef4444" : "#22c55e",
+              backgroundColor: timeLeft <= 3 ? "#ef4444" : "#5aaf86",
               transition: "background-color 0.3s"
             }
           }}
@@ -170,19 +170,21 @@ export function GameScreen({
       {/* only shown when there's a card to rate and player isn't waiting */}
       {currentCard && !isWaiting && (
         <Paper
-          elevation={3}
+          elevation={5}
           sx={{
             maxWidth: 500,
             width: "100%",
             padding: 6,
-            borderRadius: 6,
+            borderRadius: 12,
             textAlign: "center",
             mb: 4,
             mt: 8,
+            boxShadow: "0 10px 30px 10px rgba(0, 0, 0, 0.15)",
+            border: "1px solid rgba(0, 0, 0, 0.10)",
           }}
         >
           {/* restaurant name displayed prominently */}
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" fontWeight={500} gutterBottom>
             {currentCard.name}
           </Typography>
         </Paper>
@@ -247,17 +249,17 @@ export function GameScreen({
               sx={{
                 width: 70,
                 height: 70,
-                backgroundColor: "#22c55e",
+                backgroundColor: "#5aaf86",
                 color: "white",
                 "&:hover": {
-                  backgroundColor: "#16a34a",
+                  backgroundColor: "#4d9b7f",
                 },
                 mb: 1,
               }}
             >
               <CheckIcon sx={{ fontSize: 35 }} />
             </IconButton>
-            <Typography variant="body2" color="success.main" fontWeight="500">
+            <Typography variant="body2" sx={{ color: "#5aaf86" }} fontWeight="500">
               Yes
             </Typography>
           </Box>
@@ -268,13 +270,15 @@ export function GameScreen({
       {/* displays until other player also finishes, then transitions to results */}
       {isWaiting && (
         <Paper
-          elevation={3}
+          elevation={5}
           sx={{
             maxWidth: 500,
             width: "100%",
             padding: 5,
-            borderRadius: 6,
+            borderRadius: 12,
             textAlign: "center",
+            boxShadow: "0 10px 30px 10px rgba(0, 0, 0, 0.15)",
+            border: "1px solid rgba(0, 0, 0, 0.10)",
           }}
         >
           {/* circular gradient background with people icon */}
@@ -283,7 +287,7 @@ export function GameScreen({
               width: 80,
               height: 80,
               borderRadius: "50%",
-              background: "linear-gradient(135deg, #ff7e5f, #feb47b)",
+              background: "linear-gradient(135deg, #ffb263, #ffc16e)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -294,7 +298,7 @@ export function GameScreen({
           </Box>
 
           {/* confirmation message */}
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" fontWeight={500} gutterBottom>
             You're done!
           </Typography>
           {/* waiting message until other player completes their ratings */}

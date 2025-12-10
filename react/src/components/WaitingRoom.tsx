@@ -27,7 +27,7 @@ export function WaitingRoom({ roomCode, playerCount }: WaitingRoomProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fef2f2 100%)",
+        background: "linear-gradient(135deg, #e6f2e9 0%, #ffe8ca 100%)",
         padding: 0,
         margin: 0,
         position: "fixed",
@@ -37,17 +37,19 @@ export function WaitingRoom({ roomCode, playerCount }: WaitingRoomProps) {
     >
       {/* centered white card containing all UI elements */}
       <Paper
-        elevation={3}
+        elevation={5}
         sx={{
           maxWidth: 500,
           width: "100%",
           padding: 5,
-          borderRadius: 6,
+          borderRadius: 12,
           textAlign: "center",
+          boxShadow: "0 10px 30px 10px rgba(0, 0, 0, 0.15)",
+          border: "1px solid rgba(0, 0, 0, 0.10)",
         }}
       >
         {/* main title */}
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" fontWeight={500} gutterBottom>
           Waiting Room
         </Typography>
         
@@ -65,8 +67,8 @@ export function WaitingRoom({ roomCode, playerCount }: WaitingRoomProps) {
         {/* uses letter spacing for better readability of the code */}
         <Box
           sx={{
-            backgroundColor: "#fef3f0",
-            borderRadius: "16px",
+            backgroundColor: "#e6f2e9",
+            borderRadius: "14px",
             padding: "16px 32px",
             display: "inline-block",
             mb: 4,

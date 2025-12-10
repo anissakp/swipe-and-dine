@@ -34,7 +34,7 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #fff7ed 0%, #fdf2f8 50%, #fef2f2 100%)",
+        background: "linear-gradient(135deg, #e6f2e9 0%, #ffe8ca 100%)",
         position: "fixed",
         top: 0,
         left: 0,
@@ -42,17 +42,19 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
     >
       {/* centered white card containing all UI elements */}
       <Paper
-        elevation={3}
+        elevation={5}
         sx={{
           maxWidth: 500,
           width: "100%",
           padding: 5,
-          borderRadius: 6,
+          borderRadius: 12,
           textAlign: "center",
+          boxShadow: "0 10px 30px 10px rgba(0, 0, 0, 0.15)",
+          border: "1px solid rgba(0, 0, 0, 0.10)",
         }}
       >
         {/* main title */}
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" fontWeight={500} gutterBottom>
           Add Restaurants
         </Typography>
         
@@ -84,15 +86,15 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
                     mb: 2,
                     "& .MuiOutlinedInput-root": {
                       backgroundColor: "#fafafa",
-                      borderRadius: "12px",
+                      borderRadius: "14px",
                       "& fieldset": {
-                        borderColor: "#e0e0e0",
+                        borderColor: "#ced1d0ff",
                       },
                       "&:hover fieldset": {
-                        borderColor: "#d0d0d0",
+                        borderColor: "#ced1d0ff",
                       },
                       "&.Mui-focused fieldset": {
-                        borderColor: "#2196F3",
+                        borderColor: "#ced1d0ff",
                       },
                     },
                     "& input": {
@@ -111,7 +113,7 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
               sx={{ 
                 mb: 3, 
                 textTransform: "none",
-                color: "#2196F3",
+                color: "#5aaf86",
                 fontSize: "15px",
                 fontWeight: 400,
               }}
@@ -139,17 +141,17 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
                 textTransform: "none",
                 fontSize: "16px",
                 py: 1.8,
-                borderRadius: "12px",
+                borderRadius: "14px",
                 boxShadow: "none",
                 "&.Mui-disabled": {
-                  backgroundColor: "#e8e8e8",
-                  color: "#b0b0b0",
+                  backgroundColor: "#ced1d0ff",
+                  color: "white",
                 },
                 "&:not(.Mui-disabled)": {
-                  backgroundColor: "#b0b0b0",
+                  backgroundColor: "#5aaf86",
                   color: "white",
                   "&:hover": {
-                    backgroundColor: "#909090",
+                    backgroundColor: "#5aaf86",
                     boxShadow: "none",
                   },
                 },
@@ -162,7 +164,7 @@ export function RestaurantInput({ submitRestaurants }: RestaurantInputProps) {
           // confirmation message displayed after successful submission
           // tells user to wait for other player to submit their restaurants
           <Box sx={{ textAlign: "center", mt: 3 }}>
-            <Typography variant="h6" color="success.main" gutterBottom>
+            <Typography variant="h6" sx={{ color: "#5aaf86" }} gutterBottom>
               Restaurants submitted successfully!
             </Typography>
             <Typography variant="body2" color="text.secondary">
