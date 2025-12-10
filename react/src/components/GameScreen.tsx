@@ -1,3 +1,7 @@
+// source: Material UI components and styling - https://mui.com/
+// source: Material UI icons - https://mui.com/material-ui/material-icons/
+// source: React hooks documentation - https://react.dev/reference/react
+
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Paper, IconButton, LinearProgress } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -8,15 +12,22 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { Restaurant, Choice } from "../shared/types";
 import PeopleIcon from "@mui/icons-material/People";
 
+// props interface for game screen
+// this is the main gameplay screen where players swipe/rate restaurants
 interface GameScreenProps {
-  currentCard: Restaurant | null;
-  cardIndex: number;
-  totalCards: number;
-  roundNumber: number;
-  isWaiting: boolean;
-  makeChoice: (restaurantId: string, choice: Choice) => void;
+  currentCard: Restaurant | null; // currently displayed restaurant card, null when no cards left
+  cardIndex: number; // index of current card in the deck
+  totalCards: number; // total number of restaurants to rate in this round
+  roundNumber: number; // current round number (1 for initial, 2+ for runoff rounds)
+  isWaiting: boolean; // true when current player finished but waiting for other player
+  makeChoice: (restaurantId: string, choice: Choice) => void; // function to submit rating to server
 }
 
+// game screen component: main gameplay interface for rating restaurants
+// displays one restaurant at a time with three rating options (yes/neutral/no)
+// includes 10-second countdown timer that auto-submits neutral if time runs out
+// shows progress indicator and handles runoff rounds
+// transitions to waiting screen when current player finishes all cards
 export function GameScreen({
   currentCard,
   cardIndex,
@@ -25,20 +36,24 @@ export function GameScreen({
   isWaiting,
   makeChoice
 }: GameScreenProps) {
-  // added countdown timer state (starts at 10 seconds)
-  const [timeLeft, setTimeLeft] = useState(10);
+  // countdown timer state - tracks seconds remaining for current card
+  // starts at 10 seconds and counts down to 0
+  // resets to 10 when new card appears
+  const [timeLeft, setTimeLeft] = useState<number>(10);
 
-  // countdown from 10 to 0, auto-submit NEUTRAL at 0
+  // countdown timer effect - runs every second to decrement timer
+  // automatically submits neutral choice when timer reaches 0
+  // resets to 10 seconds whenever a new card appears
   useEffect(() => {
-    // reset timer when a new card appears
+    // only run timer when there's a card to rate and player isn't waiting
     if (currentCard && !isWaiting) {
       setTimeLeft(10);
 
-      // set up interval to count down every second
+      // set up interval to decrement timer every 1000ms (1 second)
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            // time's up! auto-submit NEUTRAL
+            // time expired - auto-submit neutral choice for current restaurant
             console.log("time's up. auto-submitting NEUTRAL");
             makeChoice(currentCard.id, "NEUTRAL");
             return 0;
@@ -47,12 +62,15 @@ export function GameScreen({
         });
       }, 1000);
 
-      // cleanup: clear interval when component unmounts or card changes
+      // cleanup function: clear interval when component unmounts or dependencies change
+      // prevents multiple timers running simultaneously
       return () => clearInterval(timer);
     }
   }, [currentCard, isWaiting, makeChoice]);
 
   return (
+    // full-screen container with gradient background
+    // uses fixed positioning to cover entire viewport
     <Box
       sx={{
         minHeight: "100vh",
@@ -69,7 +87,8 @@ export function GameScreen({
         left: 0,
       }}
     >
-      {/* top bar with progress and timer */}
+      {/* top bar containing progress indicator and timer */}
+      {/* only shown when there's a card to rate and player isn't waiting */}
       {currentCard && !isWaiting && (
         <Box
           sx={{
@@ -83,14 +102,16 @@ export function GameScreen({
             padding: "32px 48px",
           }}
         >
-          {/* progress indicator on left/center */}
+          {/* progress indicator showing current position in deck */}
+          {/* displays as "X of Y restaurants" (e.g. "3 of 10 restaurants") */}
           <Box sx={{ flex: 1, textAlign: "center" }}>
             <Typography variant="body1" color="text.secondary">
               {cardIndex + 1} of {totalCards} restaurants
             </Typography>
           </Box>
 
-          {/* timer on right with MUI clock icon */}
+          {/* countdown timer display with clock icon */}
+          {/* turns red when 3 seconds or less remain */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <AccessTimeIcon
               sx={{
@@ -111,7 +132,9 @@ export function GameScreen({
         </Box>
       )}
 
-      {/* progress bar for timer */}
+      {/* linear progress bar visualizing time remaining */}
+      {/* fills from left to right as time decreases */}
+      {/* turns red when 3 seconds or less remain */}
       {currentCard && !isWaiting && (
         <LinearProgress
           variant="determinate"
@@ -131,23 +154,25 @@ export function GameScreen({
         />
       )}
 
-      {/* display round number if it's a runoff round */}
+      {/* runoff round indicator - only shown when roundNumber > 1 */}
+      {/* informs players they're in a tiebreaker round to narrow down matches */}
       {roundNumber > 1 && !isWaiting && (
         <Typography
           variant="body2"
           color="warning.main"
           sx={{ position: "absolute", top: 100, fontWeight: 500 }}
         >
-          Runoff Round {roundNumber} - narrowing down your options!
+          Runoff Round {roundNumber} - Narrowing down your options!
         </Typography>
       )}
 
-      {/* show current card and choice buttons if player still has cards to rate */}
+      {/* restaurant card displaying current restaurant name */}
+      {/* only shown when there's a card to rate and player isn't waiting */}
       {currentCard && !isWaiting && (
         <Paper
           elevation={3}
           sx={{
-            maxWidth: 450,
+            maxWidth: 500,
             width: "100%",
             padding: 6,
             borderRadius: 6,
@@ -156,23 +181,7 @@ export function GameScreen({
             mt: 8,
           }}
         >
-          {/* restaurant icon with gradient - smaller */}
-          <Box
-            sx={{
-              width: 80,
-              height: 80,
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #ff7e5f, #feb47b)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 32px",
-            }}
-          >
-            <RestaurantIcon sx={{ fontSize: 35, color: "white" }} />
-          </Box>
-
-          {/* restaurant name */}
+          {/* restaurant name displayed prominently */}
           <Typography variant="h4" gutterBottom>
             {currentCard.name}
           </Typography>
@@ -180,9 +189,12 @@ export function GameScreen({
       )}
 
       {/* three choice buttons for rating the current restaurant */}
+      {/* no (red/X), neutral (yellow/-), yes (green/checkmark) */}
+      {/* only shown when there's a card to rate and player isn't waiting */}
       {currentCard && !isWaiting && (
         <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
-          {/* NO button - red */}
+          {/* NO button - red circle with X icon */}
+          {/* indicates player does not want this restaurant */}
           <Box sx={{ textAlign: "center" }}>
             <IconButton
               onClick={() => makeChoice(currentCard.id, "NO")}
@@ -204,7 +216,8 @@ export function GameScreen({
             </Typography>
           </Box>
 
-          {/* NEUTRAL button - yellow */}
+          {/* neutral button - yellow circle with minus icon */}
+          {/* indicates player is indifferent about this restaurant */}
           <Box sx={{ textAlign: "center" }}>
             <IconButton
               onClick={() => makeChoice(currentCard.id, "NEUTRAL")}
@@ -226,7 +239,8 @@ export function GameScreen({
             </Typography>
           </Box>
 
-          {/* YES button - green */}
+          {/* yes button - green circle with checkmark icon */}
+          {/* indicates player wants this restaurant */}
           <Box sx={{ textAlign: "center" }}>
             <IconButton
               onClick={() => makeChoice(currentCard.id, "YES")}
@@ -250,19 +264,20 @@ export function GameScreen({
         </Box>
       )}
 
-      {/* show waiting message if player has finished but other player hasn't */}
+      {/* waiting screen shown when current player has finished rating all cards */}
+      {/* displays until other player also finishes, then transitions to results */}
       {isWaiting && (
         <Paper
           elevation={3}
           sx={{
-            maxWidth: 400,
+            maxWidth: 500,
             width: "100%",
             padding: 5,
             borderRadius: 6,
             textAlign: "center",
           }}
         >
-          {/* people icon with gradient */}
+          {/* circular gradient background with people icon */}
           <Box
             sx={{
               width: 80,
@@ -278,9 +293,11 @@ export function GameScreen({
             <PeopleIcon sx={{ fontSize: 40, color: "white" }} />
           </Box>
 
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
+          {/* confirmation message */}
+          <Typography variant="h4" gutterBottom>
             You're done!
           </Typography>
+          {/* waiting message until other player completes their ratings */}
           <Typography variant="body1" color="text.secondary">
             Waiting for other player to finish...
           </Typography>

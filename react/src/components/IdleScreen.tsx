@@ -1,3 +1,6 @@
+// source: Material UI components and styling - https://mui.com/
+// source: Material UI icons - https://mui.com/material-ui/material-icons/
+
 import React, { useState } from "react";
 import {
   Box,
@@ -11,17 +14,26 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import WifiOffIcon from "@mui/icons-material/WifiOff";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
+// props interface for idle screen (initial landing page)
+// this screen allows player 1 to create a room or player 2 to join an existing room
 interface IdleScreenProps {
-  isConnected: boolean;
-  createRoom: () => void;
-  joinRoom: (code: string) => void;
+  isConnected: boolean; // websocket connection status from server
+  createRoom: () => void; // function to create a new game room (player 1)
+  joinRoom: (code: string) => void; // function to join an existing game room with a code (player 2)
 }
 
+// idle screen component: initial landing page where players create or join rooms
+// player 1 clicks "create new room" to get a unique room code
+// player 2 enters that code in the text field and clicks "join room"
 export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProps) {
-  // local state for the room code input field (used when joining a room)
-  const [joinCode, setJoinCode] = useState("");
+  // local state for room code input field
+  // stores the 6-character code that player 2 types to join a room
+  // automatically converted to uppercase for consistency with server-generated codes
+  const [joinCode, setJoinCode] = useState<string>("");
 
   return (
+    // full-screen container with gradient background
+    // uses fixed positioning to cover entire viewport
     <Box
       sx={{
         minHeight: "100vh",
@@ -37,17 +49,19 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
         left: 0,
       }}
     >
+      {/* centered white card containing all UI elements */}
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 650,
+          maxWidth: 500,
           width: "100%",
           padding: 5,
           borderRadius: 6,
           textAlign: "center",
         }}
       >
-        {/* icon with fork and knife */}
+        {/* circular gradient background with fork and knife icon */}
+        {/* serves as the app logo/branding element */}
         <Box
           sx={{
             width: 80,
@@ -63,17 +77,19 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
           <RestaurantIcon sx={{ fontSize: 40, color: "white" }} />
         </Box>
 
-        {/* title */}
+        {/* main title */}
         <Typography variant="h3" gutterBottom>
           Swipe & Dine
         </Typography>
 
-        {/* subtitle */}
+        {/* subtitle explaining the app's purpose */}
         <Typography variant="body1" color="text.secondary" gutterBottom sx={{ mb: 3 }}>
           Find your perfect restaurant match
         </Typography>
 
-        {/* display current WebSocket connection status */}
+        {/* connection status indicator with icon and text */}
+        {/* shows green checkmark when connected, red wifi-off icon when disconnected */}
+        {/* connection is required to create or join rooms */}
         <Box
           sx={{
             display: "flex",
@@ -100,7 +116,9 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
           )}
         </Box>
 
-        {/* CHANGED: create new room button */}
+        {/* create new room button (for player 1) */}
+        {/* disabled when not connected to server */}
+        {/* on click, server generates unique 6-character room code */}
         <Button
           variant="contained"
           fullWidth
@@ -129,19 +147,21 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
           Create New Room
         </Button>
 
-        {/* divider between create and join sections */}
+        {/* visual divider separating create and join sections */}
         <Divider sx={{ my: 3 }}>
           <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
             OR JOIN EXISTING
           </Typography>
         </Divider>
 
-        {/* CHANGED: join existing room section with input and button */}
+        {/* room code input field (for player 2) */}
+        {/* automatically converts input to uppercase for consistency with server-generated codes */}
+        {/* accepts any text but typically expects 6-character alphanumeric code */}
         <TextField
           fullWidth
           placeholder="Enter room code"
           value={joinCode}
-          onChange={(e) => setJoinCode(e.target.value.toUpperCase())} // auto-uppercase room codes
+          onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -164,12 +184,15 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
           }}
         />
 
+        {/* join room button (for player 2) */}
+        {/* disabled when not connected OR when no room code is entered */}
+        {/* on click, attempts to join room with the entered code */}
         <Button
           variant="contained"
           fullWidth
           size="large"
           onClick={() => joinRoom(joinCode)}
-          disabled={!isConnected || !joinCode} // disabled if not connected or no code entered
+          disabled={!isConnected || !joinCode}
           sx={{
             textTransform: "none",
             fontSize: 16,
