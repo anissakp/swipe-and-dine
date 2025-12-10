@@ -141,8 +141,8 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
               boxShadow: "none",
             },
             "&:disabled": {
-              backgroundColor: "#e6f2e9",
-              color: "#bbe4ca",
+              backgroundColor: "#ced1d0ff",
+              color: "white",
             },
           }}
         >
@@ -201,7 +201,6 @@ export function IdleScreen({ isConnected, createRoom, joinRoom }: IdleScreenProp
             "&.Mui-disabled": {
               backgroundColor: "#ced1d0ff",
               color: "white",
-              //opacity: 0.5
             },
             "&:not(.Mui-disabled)": {
               backgroundColor: "#5aaf86",
