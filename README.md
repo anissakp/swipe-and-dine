@@ -2,13 +2,25 @@
 
 This project was completed as part of Carnegie Mellon University's 05-635: Programming Interactive Experiences course. The goal was to build a two-player web app that helps people decide where to eat together by matching their restaurant preferences in real time. 
 
-## Installation and Usage
+## Game Flow
+1. Idle Phase: Player 1 creates a room, Player 2 joins with the code
+   - Open http://localhost:3000 in one browser tab and click "Create Room"
+   - Note the 6-character room code (e.g., "X0QEMW")
+   - Open http://localhost:3000 in another tab
+   - Enter the room code and click "Join Room"
+2. Waiting Phase: Both players see the room code and wait for the other to join
+3. Input Phase: Both players submit 3+ restaurants
+4. Playing Phase: Players independently swipe through all restaurants (10 seconds per card)
+5. Results Phase: View matches and neutral options
+6. Runoff Phase (if applicable): If 2+ matches, players vote again on just those matches
 
+## Installation and Usage
 Follow these steps to set up the project locally:
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/anissakp/PIX-Final-Project.git
+git clone https://github.com/anissakp/swipe-and-dine.git
+cd swipe-and-dine
 ```
 
 3. **Install Server Dependencies**
@@ -37,17 +49,6 @@ npm start
 ```
 Client runs on http://localhost:3000
 
-## Testing the Synchronization
-
-1. Open http://localhost:3000 in one browser tab
-2. Click "Create Room" and note the room code (e.g., "X0QEMW")
-3. Open http://localhost:3000 in another tab
-4. Enter the room code and click "Join"
-5. Both players enter 3 different restaurant names each and submit
-6. Each player makes "yes" / "no" / "neutral" choices independently at their own pace
-7. After both players finish, results display all matches (both "yes") and neutrals
-
-Watch the server terminal for console.log outputs showing player connections, room creation, restaurant submissions, individual choices, and final match calculations.
 
 ## Structure
 ```
@@ -60,11 +61,24 @@ Watch the server terminal for console.log outputs showing player connections, ro
 │   └── tsconfig.json
 ├── react/                    # React client application
 │   ├── src/
+│   │   ├── components/       # UI components for each game phase
+│   │   │   ├── IdleScreen.tsx
+│   │   │   ├── WaitingRoom.tsx
+│   │   │   ├── RestaurantInput.tsx
+│   │   │   ├── GameScreen.tsx
+│   │   │   └── ResultsScreen.tsx
 │   │   ├── hooks/
-│   │   │   └── useSocket.ts  # Custom hook for socket connection
+│   │   │   └── useSocket.ts  # Custom hook for WebSocket connection
 │   │   ├── shared/
 │   │   │   └── types.ts      # Shared TypeScript interfaces
-│   │   └── App.tsx           # Main UI with game phases
+│   │   └── App.tsx           # Main app component with phase routing
 │   └── package.json
-├── README.md
+└── README.md
 ```
+
+# Credits
+Technologies and Libraries
+- [Socket.IO](https://socket.io/) for real-time communication
+- [Material-UI](https://mui.com/) for UI components
+- [React](https://react.dev/) for frontend framework
+- [Express](https://expressjs.com/) for backend server
