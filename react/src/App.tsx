@@ -7,10 +7,11 @@ import { GameScreen } from "./components/GameScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 
 function App() {
-  // hook that manages WebSocket connection and all game logic
+  // custom hook that manages WebSocket connection and all game state
+  // returns connection status, game state, and action functions
   const {
-    isConnected,      // boolean indicating if WebSocket connection is active
-    gameState,        // object containing current game phase, room info, cards, matches, etc.
+    isConnected,      // boolean: true when WebSocket connection to server is active
+    gameState,        // object: contains current game phase, room info, cards, matches, etc.
     createRoom,       // function to create a new game room
     joinRoom,         // function to join an existing room with a code
     submitRestaurants,// function to submit player's restaurant suggestions

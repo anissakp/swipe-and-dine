@@ -173,7 +173,7 @@ export function GameScreen({
           </Box>
 
           {/* restaurant name */}
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Typography variant="h4" gutterBottom>
             {currentCard.name}
           </Typography>
         </Paper>
