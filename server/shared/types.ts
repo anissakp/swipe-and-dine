@@ -1,3 +1,4 @@
+// types.ts
 // source: TypeScript documentation - https://www.typescriptlang.org/docs/
 
 // represents a player's voting choice for a restaurant

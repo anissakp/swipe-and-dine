@@ -1,3 +1,4 @@
+// ResultsScreen.tsx
 // source: Material UI components and styling - https://mui.com/
 
 import React from "react";
@@ -56,7 +57,7 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
         {/* these are the ideal choices where both players said yes */}
         {/* displays count in parentheses for quick reference */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h5" fontWeight={500} gutterBottom>
+          <Typography variant="h5" gutterBottom>
             Matches ({matches.length})
           </Typography>
           
@@ -100,7 +101,7 @@ export function ResultsScreen({ matches, neutrals }: ResultsScreenProps) {
             {/* visual divider between matches and neutral sections */}
             <Divider sx={{ my: 3 }} />
             <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" fontWeight={500} gutterBottom>
+              <Typography variant="h5" gutterBottom>
                 Neutral Options ({neutrals.length})
               </Typography>
               

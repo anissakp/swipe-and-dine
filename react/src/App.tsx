@@ -1,3 +1,4 @@
+// App.tsx
 // source: React library - https://react.dev/
 
 import React from "react";
@@ -8,7 +9,7 @@ import { RestaurantInput } from "./components/RestaurantInput";
 import { GameScreen } from "./components/GameScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 
-// main app component: orchestrates the game flow by rendering different screens based on game phase
+// main app component: orchestrates game flow by rendering different screens based on game phase
 // acts as the root component that manages phase transitions and passes down state/actions to child components
 // game flow: idle -> waiting -> input -> playing -> ended
 function App() {
@@ -83,15 +84,16 @@ function App() {
       // playing phase: players swipe through restaurant cards making yes/neutral/no choices
       // each player sees restaurants in different order (shuffled independently)
       // includes timer that auto-submits neutral if time expires
-      case "playing":
+      case "playing": // phase 4: playing phase
         return (
-          <GameScreen
-            currentCard={gameState.currentCard}
-            cardIndex={gameState.cardIndex}
-            totalCards={gameState.totalCards}
-            roundNumber={gameState.roundNumber}
-            isWaiting={gameState.isWaiting}
-            makeChoice={makeChoice}
+          <GameScreen // game screen component
+            // passes down all necessary props from game state and action handlers
+            currentCard={gameState.currentCard} // the restaurant they're voting on now
+            cardIndex={gameState.cardIndex} // which card number (e.g., 3)
+            totalCards={gameState.totalCards} // total cards in their deck (e.g., 8)
+            roundNumber={gameState.roundNumber} // which round (1, 2, 3...)
+            isWaiting={gameState.isWaiting} // are they waiting for other player?
+            makeChoice={makeChoice} // callback to submit their vote
           />
         );
 
