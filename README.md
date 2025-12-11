@@ -75,10 +75,3 @@ Client runs on http://localhost:3000
 │   └── package.json
 └── README.md
 ```
-
-# Credits
-Technologies and Libraries
-- [Socket.IO](https://socket.io/) for real-time communication
-- [Material-UI](https://mui.com/) for UI components
-- [React](https://react.dev/) for frontend framework
-- [Express](https://expressjs.com/) for backend server
