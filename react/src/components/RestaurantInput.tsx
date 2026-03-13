@@ -11,6 +11,7 @@ interface RestaurantInputProps {
   submitRestaurants: (restaurants: string[]) => void; // function to send restaurant list to server via websocket
 }
 
+
 // restaurant input component: allows players to add and submit their restaurant preferences
 // each player must add at least 3 restaurants before submitting
 // players can add more than 3 restaurants using the "add another" button
